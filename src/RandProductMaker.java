@@ -17,14 +17,13 @@ public class RandProductMaker
     private File workingDirectory;
     private Path file;
 
-    public RandProductMaker()
-    {
+    public void start() {
         filesSaved = 0;
         products = new ArrayList<>();
         workingDirectory = new File(System.getProperty("user.dir"));
         Path file = Paths.get(workingDirectory.getPath() + "\\src\\RandProductData.bin");
+        generateFrame();
     }
-
 
     private Path nameFile()
     {
@@ -48,24 +47,23 @@ public class RandProductMaker
         gbc2.gridx = 0;
         gbc2.gridy = 1;
         gbc2.gridwidth = 1;
-        gbc2.gridheight = 3;
+        gbc2.gridheight = 1;
         gbc2.weightx = 1;
         gbc2.fill = GridBagConstraints.BOTH;
 
         //GridBagConstraints for the controlPnl
         GridBagConstraints gbc3 = new GridBagConstraints();
         gbc3.gridx = 0;
-        gbc3.gridy = 4;
+        gbc3.gridy = 3;
         gbc3.gridwidth = 1;
         gbc3.gridheight = 1;
         gbc3.weightx = 1;
-        gbc3.weighty = 1;
         gbc3.fill = GridBagConstraints.BOTH;
 
         //GridBagConstraints for the counterPnl
         GridBagConstraints gbc4 = new GridBagConstraints();
         gbc4.gridx = 0;
-        gbc4.gridy = 5;
+        gbc4.gridy = 4;
         gbc4.gridwidth = 1;
         gbc4.gridheight = 1;
         gbc4.weightx = 1;
