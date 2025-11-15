@@ -13,13 +13,11 @@ public class RandProductMaker
     private ControlPnl controlPnl;
     private CounterPnl counterPnl;
     private int filesSaved;
-    private ArrayList<Product> products;
     private File workingDirectory;
     private Path file;
 
     public void start() {
         filesSaved = 0;
-        products = new ArrayList<>();
         workingDirectory = new File(System.getProperty("user.dir"));
         Path file = Paths.get(workingDirectory.getPath() + "\\src\\RandProductData.bin");
         generateFrame();
@@ -29,6 +27,8 @@ public class RandProductMaker
     {
         return Paths.get(workingDirectory.getPath() + "\\src\\RandProductData" + (filesSaved + 1) + ".bin");
     }
+
+    public
 
     public void generateFrame() {
         frame = new JFrame();

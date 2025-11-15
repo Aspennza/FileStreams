@@ -82,6 +82,21 @@ public class Product
         return Objects.hash(ID, name, description, cost);
     }
 
+    public String padID()
+    {
+        return String.format("%6s", ID);
+    }
+
+    public String padName()
+    {
+        return String.format("%35s", name);
+    }
+
+    public String padDescrip()
+    {
+        return String.format("%75s", description);
+    }
+
     /**
      * Takes the content of a Product object and converts it into a CSV format.
      * @return a String containing a comma-separated list of product qualities.
