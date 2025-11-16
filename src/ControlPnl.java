@@ -23,13 +23,14 @@ public class ControlPnl extends JPanel
         add(newFileBtn);
 
         newFileBtn.addActionListener((ActionEvent ae) -> {
-            //call code from the randproductmaker here
+            RandProductMaker.nameFile();
+            JOptionPane.showMessageDialog(null, "New file created.");
         });
 
         add(addProdBtn);
 
         addProdBtn.addActionListener((ActionEvent ae) -> {
-            //call code here
+            RandProductMaker.addProduct();
         });
 
         add(quitBtn);

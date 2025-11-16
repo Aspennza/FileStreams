@@ -1,34 +1,142 @@
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
+//add notification for when a product is added
+//clear the text fields when a product is added
+//increment the product count when a product is added
+//basically, just review his directions!!!
+//check the code for logical errors with code review
+//add a method for resetting the program
+//check if the program can be made more object-oriented
+//create JUnit
+//javadoc
+//UML
+
 public class RandProductMaker
 {
-    private JFrame frame;
-    private TitlePnl titlePnl;
-    private ProductDataPnl productDataPnl;
-    private ControlPnl controlPnl;
-    private CounterPnl counterPnl;
-    private int filesSaved;
-    private File workingDirectory;
-    private Path file;
+    private static RandomAccessFile randFile;
+    private static JFrame frame;
+    private static TitlePnl titlePnl;
+    private static ProductDataPnl productDataPnl;
+    private static ControlPnl controlPnl;
+    private static CounterPnl counterPnl;
+    private static int filesSaved;
+    private static File workingDirectory;
+    private static Path file;
+    private static int recordsWritten;
+    private static final int RECORD_SIZE = 124;
 
     public void start() {
         filesSaved = 0;
+        recordsWritten = 0;
         workingDirectory = new File(System.getProperty("user.dir"));
-        Path file = Paths.get(workingDirectory.getPath() + "\\src\\RandProductData.bin");
         generateFrame();
     }
 
-    private Path nameFile()
+    public static void nameFile()
     {
-        return Paths.get(workingDirectory.getPath() + "\\src\\RandProductData" + (filesSaved + 1) + ".bin");
+        file = Paths.get(workingDirectory.getPath() + "\\src\\RandProductData" + (filesSaved + 1) + ".bin");
     }
 
-    public
+    public static void addProduct()
+    {
+        boolean isValidInput;
+        if (file != null)
+        {
+            if(checkValidInput())
+            {
+                String ID = productDataPnl.getIDTF().getText().trim();
+                String name = productDataPnl.getNameTF().getText().trim();
+                String description = productDataPnl.getDescripTF().getText().trim();
+                try {
+                    double cost = Double.parseDouble(productDataPnl.getCostTF().getText().trim());
+
+                    Product product = new Product(ID, name, description, cost);
+
+                    ID = product.padID();
+                    name = product.padName();
+                    description = product.padDescrip();
+
+                    saveProductData(ID, name, description, cost);
+
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(null, "The input entered into the Product Cost field is not a valid number. Please try again.");
+                }
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "You must select the New File button before writing products to a file.");
+        }
+    }
+
+    private static void saveProductData(String ID, String name, String description, double cost)
+    {
+        try {
+            randFile = new RandomAccessFile(file.toFile(), "rw");
+            randFile.seek(findPosition());
+
+            randFile.write(ID.getBytes(StandardCharsets.UTF_8));
+            randFile.write(name.getBytes(StandardCharsets.UTF_8));
+            randFile.write(description.getBytes(StandardCharsets.UTF_8));
+            randFile.writeDouble(cost);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static long findPosition()
+    {
+        return (long) recordsWritten * RECORD_SIZE;
+    }
+
+    private static boolean checkValidInput()
+    {
+        boolean isIDValid = false;
+        boolean isNameValid = false;
+        boolean isDescripValid = false;
+        boolean isCostValid = false;
+        if(productDataPnl.getIDTF().getText().matches("[0-9][0-9][0-9][0-9][0-9][0-9]"))
+        {
+            isIDValid = true;
+
+            if(!productDataPnl.getNameTF().getText().trim().isEmpty())
+            {
+                isNameValid = true;
+
+                if(!productDataPnl.getDescripTF().getText().trim().isEmpty()) {
+                    isDescripValid = true;
+
+                    if(productDataPnl.getCostTF().getText().matches("^[0-9]+$"))
+                    {
+                        isCostValid = true;
+                    } else {
+                        JOptionPane.showMessageDialog(null, "The cost field must contain only numeric characters and cannot be empty.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "The Product Description field cannot be empty.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "The Product Name field cannot be empty.");
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "The Product ID field must contain 6 digits and no non-numeric characters.");
+        }
+
+        if(isIDValid && isNameValid && isDescripValid && isCostValid) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     public void generateFrame() {
         frame = new JFrame();
