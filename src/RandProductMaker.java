@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 
 //add notification instructing how to use the program when it launches
+//add notifications for when errors occur
 //basically, just review his directions!!!
 //make minor optimizations to the code through code review
 //check if the program can be made more object-oriented
