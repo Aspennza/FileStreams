@@ -9,12 +9,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-//add notification for when a product is added
-//clear the text fields when a product is added
-//increment the product count when a product is added
+//add notification instructing how to use the program when it launches
 //basically, just review his directions!!!
-//check the code for logical errors with code review
-//add a method for resetting the program
+//make minor optimizations to the code through code review
 //check if the program can be made more object-oriented
 //create JUnit
 //javadoc
@@ -22,14 +19,13 @@ import java.util.ArrayList;
 
 public class RandProductMaker
 {
-    private static RandomAccessFile randFile;
-    private static JFrame frame;
-    private static TitlePnl titlePnl;
-    private static ProductDataPnl productDataPnl;
-    private static ControlPnl controlPnl;
-    private static CounterPnl counterPnl;
+    private JFrame frame;
+    private TitlePnl titlePnl;
+    private ProductDataPnl productDataPnl;
+    private ControlPnl controlPnl;
+    private CounterPnl counterPnl;
     private static int filesSaved;
-    private static File workingDirectory;
+    private File workingDirectory;
     private static Path file;
     private static int recordsWritten;
     private static final int RECORD_SIZE = 124;
@@ -38,15 +34,16 @@ public class RandProductMaker
         filesSaved = 0;
         recordsWritten = 0;
         workingDirectory = new File(System.getProperty("user.dir"));
+        nameFile();
         generateFrame();
     }
 
-    public static void nameFile()
+    public void nameFile()
     {
         file = Paths.get(workingDirectory.getPath() + "\\src\\RandProductData" + (filesSaved + 1) + ".bin");
     }
 
-    public static void addProduct()
+    public void addProduct()
     {
         boolean isValidInput;
         if (file != null)
@@ -67,6 +64,15 @@ public class RandProductMaker
 
                     saveProductData(ID, name, description, cost);
 
+                    JOptionPane.showMessageDialog(null, "The product was saved.");
+                    recordsWritten++;
+
+                    productDataPnl.getIDTF().setText("");
+                    productDataPnl.getNameTF().setText("");
+                    productDataPnl.getDescripTF().setText("");
+                    productDataPnl.getCostTF().setText("");
+
+                    counterPnl.getCountTF().setText("" + recordsWritten);
                 } catch (NumberFormatException e) {
                     JOptionPane.showMessageDialog(null, "The input entered into the Product Cost field is not a valid number. Please try again.");
                 }
@@ -78,8 +84,7 @@ public class RandProductMaker
 
     private static void saveProductData(String ID, String name, String description, double cost)
     {
-        try {
-            randFile = new RandomAccessFile(file.toFile(), "rw");
+        try (RandomAccessFile randFile = new RandomAccessFile(file.toFile(), "rw")) {
             randFile.seek(findPosition());
 
             randFile.write(ID.getBytes(StandardCharsets.UTF_8));
@@ -93,12 +98,45 @@ public class RandProductMaker
         }
     }
 
+    private void resetProgram()
+    {
+        recordsWritten = 0;
+        productDataPnl.getIDTF().setText("");
+        productDataPnl.getNameTF().setText("");
+        productDataPnl.getDescripTF().setText("");
+        productDataPnl.getCostTF().setText("");
+        counterPnl.getCountTF().setText("");
+    }
+
+    public void createNewFile()
+    {
+        if (file != null)
+        {
+            //This int tracks whether the user confirmed or denied they wanted to quit the program
+            int selection = JOptionPane.showConfirmDialog(null, "Are you sure you want to create a new file?", "New File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            //This algorithm determines whether to quit the program based on the user's input
+            if(selection == JOptionPane.YES_OPTION) {
+                resetProgram();
+                filesSaved++;
+                nameFile();
+                JOptionPane.showMessageDialog(null, "Creating a new file...");
+            } else
+            {
+                JOptionPane.showMessageDialog(null, "The current file will remain open.");
+            }
+        } else
+        {
+            nameFile();
+        }
+    }
+
     private static long findPosition()
     {
         return (long) recordsWritten * RECORD_SIZE;
     }
 
-    private static boolean checkValidInput()
+    private boolean checkValidInput()
     {
         boolean isIDValid = false;
         boolean isNameValid = false;
@@ -115,7 +153,7 @@ public class RandProductMaker
                 if(!productDataPnl.getDescripTF().getText().trim().isEmpty()) {
                     isDescripValid = true;
 
-                    if(productDataPnl.getCostTF().getText().matches("^[0-9]+$"))
+                    if(productDataPnl.getCostTF().getText().matches("^[0-9]+(\\.[0-9]+)?$"))
                     {
                         isCostValid = true;
                     } else {
@@ -162,7 +200,7 @@ public class RandProductMaker
         //GridBagConstraints for the controlPnl
         GridBagConstraints gbc3 = new GridBagConstraints();
         gbc3.gridx = 0;
-        gbc3.gridy = 3;
+        gbc3.gridy = 2;
         gbc3.gridwidth = 1;
         gbc3.gridheight = 1;
         gbc3.weightx = 1;
@@ -171,7 +209,7 @@ public class RandProductMaker
         //GridBagConstraints for the counterPnl
         GridBagConstraints gbc4 = new GridBagConstraints();
         gbc4.gridx = 0;
-        gbc4.gridy = 4;
+        gbc4.gridy = 3;
         gbc4.gridwidth = 1;
         gbc4.gridheight = 1;
         gbc4.weightx = 1;
@@ -200,7 +238,7 @@ public class RandProductMaker
         productDataPnl = new ProductDataPnl();
         mainPnl.add(productDataPnl, gbc2);
 
-        controlPnl = new ControlPnl();
+        controlPnl = new ControlPnl(this);
         mainPnl.add(controlPnl, gbc3);
 
         counterPnl = new CounterPnl();

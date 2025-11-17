@@ -84,17 +84,17 @@ public class Product
 
     public String padID()
     {
-        return String.format("%6s", ID);
+        return String.format("%6.6s", ID);
     }
 
     public String padName()
     {
-        return String.format("%35s", name);
+        return String.format("%35.35s", name);
     }
 
     public String padDescrip()
     {
-        return String.format("%75s", description);
+        return String.format("%75.75s", description);
     }
 
     /**

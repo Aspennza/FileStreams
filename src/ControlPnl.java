@@ -10,9 +10,11 @@ public class ControlPnl extends JPanel
     JButton newFileBtn;
     JButton addProdBtn;
     JButton quitBtn;
+    RandProductMaker maker;
 
-    public ControlPnl()
+    public ControlPnl(RandProductMaker maker)
     {
+        this.maker = maker;
         setLayout(new GridLayout(1, 3));
         setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(10, 10, 10, 10)));
 
@@ -23,20 +25,29 @@ public class ControlPnl extends JPanel
         add(newFileBtn);
 
         newFileBtn.addActionListener((ActionEvent ae) -> {
-            RandProductMaker.nameFile();
-            JOptionPane.showMessageDialog(null, "New file created.");
+            maker.createNewFile();
         });
 
         add(addProdBtn);
 
         addProdBtn.addActionListener((ActionEvent ae) -> {
-            RandProductMaker.addProduct();
+            maker.addProduct();
         });
 
         add(quitBtn);
 
         quitBtn.addActionListener((ActionEvent ae) -> {
-            //call code here
+            //This int tracks whether the user confirmed or denied they wanted to quit the program
+            int selection = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit?", "Quit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            //This algorithm determines whether to quit the program based on the user's input
+            if(selection == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(null, "Quitting the program...");
+                System.exit(0);
+            } else
+            {
+                JOptionPane.showMessageDialog(null, "The program will remain open.");
+            }
         });
     }
 
