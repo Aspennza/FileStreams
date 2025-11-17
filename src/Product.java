@@ -24,6 +24,10 @@ public class Product
     //This double holds the cost of each Product object
     private double cost;
 
+    private static final int ID_LENGTH = 6;
+    private static final int NAME_LENGTH = 35;
+    private static final int DESCRIPTION_LENGTH = 75;
+
     public Product(String ID, String name, String description, double cost)
     {
         this.ID = ID;
@@ -84,17 +88,20 @@ public class Product
 
     public String padID()
     {
-        return String.format("%-6s", ID);
+        String formatted = (ID.length() > ID_LENGTH) ? ID.substring(0, ID_LENGTH) : ID;
+        return String.format("%-6s", formatted);
     }
 
     public String padName()
     {
-        return String.format("%-35s", name);
+        String formatted = (name.length() > NAME_LENGTH) ? name.substring(0, NAME_LENGTH) : name;
+        return String.format("%-35s", formatted);
     }
 
     public String padDescrip()
     {
-        return String.format("%-75s", description);
+        String formatted = (description.length() > DESCRIPTION_LENGTH) ? description.substring(0, DESCRIPTION_LENGTH) : description;
+        return String.format("%-75s", formatted);
     }
 
     /**

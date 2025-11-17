@@ -91,4 +91,11 @@ public class ProductDataPnl extends JPanel
     public JTextField getCostTF() {
         return costTF;
     }
+
+    public void clearInputs() {
+        IDTF.setText("");
+        nameTF.setText("");
+        descripTF.setText("");
+        costTF.setText("");
+    }
 }

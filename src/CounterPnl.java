@@ -32,6 +32,10 @@ public class CounterPnl extends JPanel
         add(countTF, gbc);
     }
 
+    public void updateCount(int count) {
+        countTF.setText("" + count);
+    }
+
     public JLabel getCountLbl() {
         return countLbl;
     }
