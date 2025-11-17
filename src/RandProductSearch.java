@@ -1,10 +1,8 @@
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.util.List;
 import java.awt.*;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 public class RandProductSearch
 {
@@ -14,144 +12,41 @@ public class RandProductSearch
     private FilteredProductsPnl filteredProductsPnl;
     private ControlPnl2 controlPnl;
     private FileChooserLauncher chooser;
-    private Path file;
-    private ArrayList<Product> products;
-    private int recordsRead;
-    private final int RECORD_SIZE = 124;
+    private ProductReader reader;
 
     public void start() {
+        reader = new ProductReader();
         chooser = new FileChooserLauncher();
-        products = new ArrayList<>();
-        recordsRead = 0;
         generateFrame();
+        setUpButtonActions();
         controlPnl.getNewFileBtn().setEnabled(false);
+        controlPnl.getSearchBtn().setEnabled(false);
         JOptionPane.showMessageDialog(null, "Welcome to the Product Searcher! First, pick a file, then enter a search string to filter the file for relevant product names.");
     }
 
-    public void chooseFile()
-    {
-        Path selectedFile = chooser.chooseFile();
-
-        if(selectedFile != null) {
-            file = selectedFile;
-            fileSearchPnl.getFileTF().setText(file.getFileName().toString());
-            controlPnl.getNewFileBtn().setEnabled(true);
-        }
-    }
-
-    private static Product readProductData(RandomAccessFile randFile, long position)
-    {
-        try {
-            if (position >= randFile.length()) {
-                return null; //This means there are no more records in the file
-            }
-
-            randFile.seek(position);
-            byte[] IDBytes = new byte[6];
-            randFile.readFully(IDBytes);
-            String ID = new String(IDBytes, StandardCharsets.UTF_8).trim();
-
-            byte[] nameBytes = new byte[35];
-            randFile.readFully(nameBytes);
-            String name = new String(nameBytes, StandardCharsets.UTF_8).trim();
-
-            byte[] descripBytes = new byte[75];
-            randFile.readFully(descripBytes);
-            String description = new String(descripBytes, StandardCharsets.UTF_8).trim();
-
-            double cost = randFile.readDouble();
-
-
-            Product product = new Product(ID, name, description, cost);
-            return product;
-        } catch (IOException e) {
-        e.printStackTrace();
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error reading product data:\n" + e.getMessage(),
-                    "File Read Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        return null; //This means there was a corrupted record
-        }
-    }
-
-    public void loadAllProducts() {
-        products.clear();
-        recordsRead = 0;
-
-        if(file == null) {
-            JOptionPane.showMessageDialog(null, "No file was selected.");
-            return;
-        }
-
-        try(RandomAccessFile randFile = new RandomAccessFile(file.toFile(), "r")) {
-            Product p;
-            while ((p = readProductData(randFile, recordsRead * RECORD_SIZE)) != null) {
-                products.add(p);
-                recordsRead++;
-            }
-
-        if(products.isEmpty()) {
-            JOptionPane.showMessageDialog(null, "This file does not appear to contain any products.");
-        } else {
-            JOptionPane.showMessageDialog(null, products.size() + " products were loaded from the file.");
-        }
-        } catch (IOException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Error reading product data:\n" + e.getMessage(),
-                    "File Read Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        }
-    }
-
-    public void searchFile()
-    {
-        if (products.isEmpty())
-        {
-            JOptionPane.showMessageDialog(null, "You must select a non-empty file before searching.");
-            return;
-        }
-
-        if(fileSearchPnl.getSearchStringTF().getText().trim().isEmpty())
-        {
-            JOptionPane.showMessageDialog(null, "You must enter a search string before searching the file.");
-            return;
-        }
-
-        if(!filteredProductsPnl.getFilteredProductsTA().getText().isEmpty())
-        {
-            filteredProductsPnl.getFilteredProductsTA().setText("");
-        }
-
-        int productIndex = 1;
-
-        for (Product p : products)
-        {
-            if(p.getName().toLowerCase().contains(fileSearchPnl.getSearchStringTF().getText().trim().toLowerCase()))
-            {
-                filteredProductsPnl.getFilteredProductsTA().append("Product " + productIndex + "\nID: " + p.getID() + "\nName: " + p.getName() + "\nDescription: " + p.getDescription() + "\nCost: $" +  String.format("%.2f", p.getCost()) + "\n-----------------------------\n");
-                productIndex++;
-            }
-        }
-
-        JOptionPane.showMessageDialog(null, "Search complete.");
-    }
-
-    public void resetProgram()
-    {
-        file = null;
+    private void resetProgram() {
+        reader.reset();
         chooser.resetChooser();
-        products.clear();
-        recordsRead = 0;
         fileSearchPnl.getFileTF().setText("");
-        fileSearchPnl.getSelectBtn().setEnabled(true);
+        fileSearchPnl.getSearchStringTF().setText("");
         filteredProductsPnl.getFilteredProductsTA().setText("");
         controlPnl.getNewFileBtn().setEnabled(false);
-        fileSearchPnl.getSearchStringTF().setText("");
+        fileSearchPnl.getSelectBtn().setEnabled(true);
+        controlPnl.getSearchBtn().setEnabled(false);
+    }
+
+    private void displayResults(List<Product> results) {
+        filteredProductsPnl.getFilteredProductsTA().setText("");
+        int index = 1;
+
+        for(Product p : results) {
+            filteredProductsPnl.getFilteredProductsTA().append("Product " + index + "\nID: " + p.getID()
+                    + "\nName: " + p.getName()
+                    + "\nDescription: " + p.getDescription()
+                    + "\nCost: $" + String.format("%.2f", p.getCost())
+                    + "\n-----------------------------\n");
+            index++;
+        }
     }
 
     private void generateFrame()
@@ -218,20 +113,80 @@ public class RandProductSearch
         titlePnl = new TitlePnl2();
         mainPnl.add(titlePnl, gbc1);
 
-        fileSearchPnl = new FileSearchPnl(this);
+        fileSearchPnl = new FileSearchPnl();
         mainPnl.add(fileSearchPnl, gbc2);
 
         filteredProductsPnl = new FilteredProductsPnl();
         mainPnl.add(filteredProductsPnl, gbc3);
 
-        controlPnl = new ControlPnl2(this);
+        controlPnl = new ControlPnl2();
         mainPnl.add(controlPnl, gbc4);
 
         frame.setSize(screenWidth * 3 / 4, screenHeight * 3 / 4);
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Tag Extractor");
+        frame.setTitle("Product Searcher");
         frame.setVisible(true);
+    }
+
+    private void setUpButtonActions()
+    {
+        fileSearchPnl.getSelectBtn().addActionListener((ActionEvent ae) -> {
+            Path selectedFile = chooser.chooseFile();
+
+            if(selectedFile != null) {
+                reader.setCurrentFile(selectedFile);
+                fileSearchPnl.getFileTF().setText(selectedFile.getFileName().toString());
+                reader.loadAllProducts(selectedFile);
+                fileSearchPnl.getSelectBtn().setEnabled(false);
+                controlPnl.getNewFileBtn().setEnabled(true);
+                controlPnl.getSearchBtn().setEnabled(true);
+            }
+        });
+
+        controlPnl.getSearchBtn().addActionListener((ActionEvent ae) -> {
+            String searchString = fileSearchPnl.getSearchStringTF().getText().trim();
+
+            if(reader.getProducts().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "You must select a file before searching.");
+                return;
+            }
+
+            if (searchString.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "You must enter a search string.");
+                return;
+            }
+            displayResults(reader.searchFile(searchString));
+
+            JOptionPane.showMessageDialog(null, "Search complete.");
+        });
+
+        controlPnl.getNewFileBtn().addActionListener((ActionEvent ae) -> {
+            //This int tracks whether the user confirmed or denied they wanted to quit the program
+            int selection = JOptionPane.showConfirmDialog(null, "Are you sure you want to reset the program?", "Reset", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            //This algorithm determines whether to quit the program based on the user's input
+            if(selection == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(null, "Resetting the program...");
+                resetProgram();
+            } else {
+                JOptionPane.showMessageDialog(null, "The current file will remain open.");
+            }
+        });
+
+        controlPnl.getQuitBtn().addActionListener((ActionEvent ae) -> {
+            //This int tracks whether the user confirmed or denied they wanted to quit the program
+            int selection = JOptionPane.showConfirmDialog(null, "Are you sure you want to quit? You can press Re-run Program to reset the program.", "Quit", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            //This algorithm determines whether to quit the program based on the user's input
+            if(selection == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(null, "Quitting the program...");
+                System.exit(0);
+            } else
+            {
+                JOptionPane.showMessageDialog(null, "The program will remain open.");
+            }
+        });
     }
 
     public JFrame getFrame() {
@@ -256,17 +211,5 @@ public class RandProductSearch
 
     public FileChooserLauncher getChooser() {
         return chooser;
-    }
-
-    public Path getFile() {
-        return file;
-    }
-
-    public ArrayList<Product> getProducts() {
-        return products;
-    }
-
-    public int getRecordsRead() {
-        return recordsRead;
     }
 }

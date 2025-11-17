@@ -1,4 +1,3 @@
-import javax.print.attribute.HashPrintJobAttributeSet;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -13,10 +12,8 @@ public class FileSearchPnl extends JPanel
     JButton selectBtn;
     JLabel searchStringLbl;
     JTextField searchStringTF;
-    RandProductSearch searcher;
 
-    public FileSearchPnl(RandProductSearch searcher) {
-        this.searcher = searcher;
+    public FileSearchPnl() {
         setLayout(new GridBagLayout());
         setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(10, 10, 10, 10)));
 
@@ -73,16 +70,6 @@ public class FileSearchPnl extends JPanel
         searchStringTF = new JTextField(30);
 
         add(selectBtn, gbc1);
-
-        selectBtn.addActionListener((ActionEvent ae) -> {
-            searcher.chooseFile();
-
-            if(searcher.getFile() != null) {
-                searcher.loadAllProducts();
-                selectBtn.setEnabled(false);
-            }
-        });
-
         add(fileLbl, gbc2);
         add(fileTF, gbc3);
         add(searchStringLbl, gbc4);
