@@ -2,10 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.ArrayList;
 
 
-//LOOK AT THE EXAMPLE OF HOW TO ACTUALLY READ THE FILE THAT YOU SAVED IN ONENOTE
+
 
 public class RandProductSearch
 {
@@ -15,11 +17,18 @@ public class RandProductSearch
     private FilteredProductsPnl filteredProductsPnl;
     private ControlPnl2 controlPnl;
     private FileChooserLauncher chooser;
-    private static Path file;
+    private Path file;
+    private ArrayList<Product> products;
+    private int recordsRead;
+    private final int RECORD_SIZE = 124;
 
     public void start() {
         chooser = new FileChooserLauncher();
+        products = new ArrayList<>();
+        recordsRead = 0;
         generateFrame();
+        controlPnl.getNewFileBtn().setEnabled(false);
+        JOptionPane.showMessageDialog(null, "Welcome to the Product Searcher! First, pick a file, then enter a search string to filter the file for relevant product names.");
     }
 
     public void chooseFile()
@@ -28,26 +37,26 @@ public class RandProductSearch
 
         if(selectedFile != null) {
             file = selectedFile;
+            fileSearchPnl.getFileTF().setText(file.getFileName().toString());
+            controlPnl.getNewFileBtn().setEnabled(true);
         }
     }
 
-    private static Product readProductData()
+
+
+
+
+    public void resetProgram()
     {
-        if(file != null) {
-            try (RandomAccessFile randFile = new RandomAccessFile(file.toFile(), "r"))
-            {
-                randFile.seek(0);
-                byte[] bytes = new byte[6];
-                randFile.readFully(bytes);
-
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-        } else
-        {
-            JOptionPane.showMessageDialog(null, "You must select a file before searching.");
-        }
-
+        file = null;
+        chooser.resetChooser();
+        products.clear();
+        recordsRead = 0;
+        fileSearchPnl.getFileTF().setText("");
+        fileSearchPnl.getSelectBtn().setEnabled(true);
+        filteredProductsPnl.getFilteredProductsTA().setText("");
+        controlPnl.getNewFileBtn().setEnabled(false);
+        fileSearchPnl.getSearchStringTF().setText("");
     }
 
     private void generateFrame()
@@ -61,6 +70,7 @@ public class RandProductSearch
         gbc1.gridwidth = 1;
         gbc1.gridheight = 1;
         gbc1.weightx = 1;
+        gbc1.weighty = 0.25;
         gbc1.fill = GridBagConstraints.BOTH;
 
         //GridBagConstraints for the filePnl
@@ -70,6 +80,7 @@ public class RandProductSearch
         gbc2.gridwidth = 1;
         gbc2.gridheight = 1;
         gbc2.weightx = 1;
+        gbc2.weighty = 0.25;
         gbc2.fill = GridBagConstraints.BOTH;
 
         //GridBagConstraints for the tagPnl
@@ -79,6 +90,7 @@ public class RandProductSearch
         gbc3.gridwidth = 1;
         gbc3.gridheight = 1;
         gbc3.weightx = 1;
+        gbc3.weighty = 0.25;
         gbc3.fill = GridBagConstraints.BOTH;
 
         //GridBagConstraints for the controlPnl
@@ -88,6 +100,7 @@ public class RandProductSearch
         gbc4.gridwidth = 1;
         gbc4.gridheight = 1;
         gbc4.weightx = 1;
+        gbc4.weighty = 0.25;
         gbc4.fill = GridBagConstraints.BOTH;
 
         JPanel mainPnl = new JPanel();
@@ -110,13 +123,13 @@ public class RandProductSearch
         titlePnl = new TitlePnl2();
         mainPnl.add(titlePnl, gbc1);
 
-        fileSearchPnl = new FileSearchPnl();
+        fileSearchPnl = new FileSearchPnl(this);
         mainPnl.add(fileSearchPnl, gbc2);
 
         filteredProductsPnl = new FilteredProductsPnl();
         mainPnl.add(filteredProductsPnl, gbc3);
 
-        controlPnl = new ControlPnl2();
+        controlPnl = new ControlPnl2(this);
         mainPnl.add(controlPnl, gbc4);
 
         frame.setSize(screenWidth * 3 / 4, screenHeight * 3 / 4);
@@ -124,5 +137,41 @@ public class RandProductSearch
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Tag Extractor");
         frame.setVisible(true);
+    }
+
+    public JFrame getFrame() {
+        return frame;
+    }
+
+    public TitlePnl2 getTitlePnl() {
+        return titlePnl;
+    }
+
+    public FileSearchPnl getFileSearchPnl() {
+        return fileSearchPnl;
+    }
+
+    public FilteredProductsPnl getFilteredProductsPnl() {
+        return filteredProductsPnl;
+    }
+
+    public ControlPnl2 getControlPnl() {
+        return controlPnl;
+    }
+
+    public FileChooserLauncher getChooser() {
+        return chooser;
+    }
+
+    public Path getFile() {
+        return file;
+    }
+
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
+
+    public int getRecordsRead() {
+        return recordsRead;
     }
 }

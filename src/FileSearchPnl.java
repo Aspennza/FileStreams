@@ -13,8 +13,10 @@ public class FileSearchPnl extends JPanel
     JButton selectBtn;
     JLabel searchStringLbl;
     JTextField searchStringTF;
+    RandProductSearch searcher;
 
-    public FileSearchPnl() {
+    public FileSearchPnl(RandProductSearch searcher) {
+        this.searcher = searcher;
         setLayout(new GridBagLayout());
         setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(10, 10, 10, 10)));
 
@@ -43,9 +45,10 @@ public class FileSearchPnl extends JPanel
         gbc3.gridwidth = 1;
         gbc3.gridheight = 1;
         gbc3.fill = GridBagConstraints.BOTH;
+        gbc3.insets = new Insets(15, 15, 15, 15);
 
         GridBagConstraints gbc4 = new GridBagConstraints();
-        gbc4.gridx = 0;
+        gbc4.gridx = 1;
         gbc4.gridy = 1;
         gbc4.gridwidth = 1;
         gbc4.gridheight = 1;
@@ -54,11 +57,12 @@ public class FileSearchPnl extends JPanel
         gbc4.insets = new Insets(15, 15, 15, 15);
 
         GridBagConstraints gbc5 = new GridBagConstraints();
-        gbc5.gridx = 1;
+        gbc5.gridx = 2;
         gbc5.gridy = 1;
         gbc5.gridwidth = 1;
         gbc5.gridheight = 1;
         gbc5.fill = GridBagConstraints.BOTH;
+        gbc5.insets = new Insets(15, 15, 15, 15);
 
         fileLbl = new JLabel("Chosen File:");
         fileTF = new JTextField(30);
@@ -71,11 +75,18 @@ public class FileSearchPnl extends JPanel
         add(selectBtn, gbc1);
 
         selectBtn.addActionListener((ActionEvent ae) -> {
-            //code goes here
+            searcher.chooseFile();
+
+            if(searcher.getFile() != null) {
+                searcher.loadAllProducts();
+                selectBtn.setEnabled(false);
+            }
         });
 
         add(fileLbl, gbc2);
         add(fileTF, gbc3);
+        add(searchStringLbl, gbc4);
+        add(searchStringTF, gbc5);
     }
 
     public JLabel getFileLbl() {
@@ -88,5 +99,13 @@ public class FileSearchPnl extends JPanel
 
     public JButton getSelectBtn() {
         return selectBtn;
+    }
+
+    public JLabel getSearchStringLbl() {
+        return searchStringLbl;
+    }
+
+    public JTextField getSearchStringTF() {
+        return searchStringTF;
     }
 }
