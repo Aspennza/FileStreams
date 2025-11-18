@@ -4,12 +4,7 @@ import java.awt.event.ActionEvent;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-//MOVE ACTIONLISTENERS TO RANDPRODUCTMAKER!!
-//add notification instructing how to use the program when it launches
-//add notifications for when errors occur
 //basically, just review his directions!!!
-//make minor optimizations to the code through code review
-//check if the program can be made more object-oriented
 //create JUnit
 //javadoc
 //UML
@@ -30,6 +25,7 @@ public class RandProductMaker
         writer = new ProductWriter(nameFile());
         validator = new ProductValidator();
         generateFrame();
+        JOptionPane.showMessageDialog(null, "Welcome to the Product Maker. First, type some data into the product information fields, then click Add Product to add them to a binary file. You can make a new file by clicking New File.");
     }
 
     public Path nameFile()
@@ -66,7 +62,7 @@ public class RandProductMaker
                 }
     }
 
-    private void resetProgram()
+    public void resetProgram()
     {
         productDataPnl.clearInputs();
         counterPnl.updateCount(0);
@@ -189,5 +185,53 @@ public class RandProductMaker
         frame.setTitle("Product Maker");
         frame.setVisible(true);
         setUpButtonActions();
+    }
+
+    public JFrame getFrame() {
+        return frame;
+    }
+
+    public TitlePnl getTitlePnl() {
+        return titlePnl;
+    }
+
+    public ProductDataPnl getProductDataPnl() {
+        return productDataPnl;
+    }
+
+    public ControlPnl getControlPnl() {
+        return controlPnl;
+    }
+
+    public CounterPnl getCounterPnl() {
+        return counterPnl;
+    }
+
+    public ProductWriter getWriter() {
+        return writer;
+    }
+
+    public ProductValidator getValidator() {
+        return validator;
+    }
+
+    public int getFilesSaved() {
+        return filesSaved;
+    }
+
+    public void setFilesSaved(int filesSaved) {
+        this.filesSaved = filesSaved;
+    }
+
+    public void setWriter(ProductWriter writer) {
+        this.writer = writer;
+    }
+
+    public void setCounterPnl(CounterPnl counterPnl) {
+        this.counterPnl = counterPnl;
+    }
+
+    public void setProductDataPnl(ProductDataPnl productDataPnl) {
+        this.productDataPnl = productDataPnl;
     }
 }

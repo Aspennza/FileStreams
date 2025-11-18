@@ -24,7 +24,7 @@ public class RandProductSearch
         JOptionPane.showMessageDialog(null, "Welcome to the Product Searcher! First, pick a file, then enter a search string to filter the file for relevant product names.");
     }
 
-    private void resetProgram() {
+    public void resetProgram() {
         reader.reset();
         chooser.resetChooser();
         fileSearchPnl.getFileTF().setText("");
@@ -35,7 +35,7 @@ public class RandProductSearch
         controlPnl.getSearchBtn().setEnabled(false);
     }
 
-    private void displayResults(List<Product> results) {
+    public void displayResults(List<Product> results) {
         filteredProductsPnl.getFilteredProductsTA().setText("");
         int index = 1;
 
@@ -49,7 +49,7 @@ public class RandProductSearch
         }
     }
 
-    private void generateFrame()
+    public void generateFrame()
     {
         frame = new JFrame();
 
@@ -211,5 +211,9 @@ public class RandProductSearch
 
     public FileChooserLauncher getChooser() {
         return chooser;
+    }
+
+    public ProductReader getReader() {
+        return reader;
     }
 }
