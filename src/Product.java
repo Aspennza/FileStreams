@@ -24,8 +24,13 @@ public class Product
     //This double holds the cost of each Product object
     private double cost;
 
+    //This int stores the permanent length of padded IDs
     private static final int ID_LENGTH = 6;
+
+    //This int stores the permanent length of padded names
     private static final int NAME_LENGTH = 35;
+
+    //This int stores the permanent length of padded descriptions
     private static final int DESCRIPTION_LENGTH = 75;
 
     public Product(String ID, String name, String description, double cost)
@@ -86,18 +91,30 @@ public class Product
         return Objects.hash(ID, name, description, cost);
     }
 
+    /**
+     * This method pads the product ID to a guaranteed 6 characters
+     * @return a String of the padded ID
+     */
     public String padID()
     {
         String formatted = (ID.length() > ID_LENGTH) ? ID.substring(0, ID_LENGTH) : ID;
         return String.format("%-6s", formatted);
     }
 
+    /**
+     * This method pads the name to a guaranteed 35 characters
+     * @return a String of the padded name
+     */
     public String padName()
     {
         String formatted = (name.length() > NAME_LENGTH) ? name.substring(0, NAME_LENGTH) : name;
         return String.format("%-35s", formatted);
     }
 
+    /**
+     * This method pads the description to a guaranteed 75 characters
+     * @return a String of the padded description
+     */
     public String padDescrip()
     {
         String formatted = (description.length() > DESCRIPTION_LENGTH) ? description.substring(0, DESCRIPTION_LENGTH) : description;

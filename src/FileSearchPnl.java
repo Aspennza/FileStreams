@@ -5,14 +5,29 @@ import javax.swing.border.EtchedBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 
+/**
+ * Allows the creation of JPanels wih a JButton for choosing a file
+ * and a text field for entering a search string.
+ * @author Zoe Aspenns aspennza@mail.uc.edu
+ */
 public class FileSearchPnl extends JPanel
 {
+    //A JLabel for the fileTF
     JLabel fileLbl;
+
+    //A JTextField for displaying the filename
     JTextField fileTF;
+
+    //A JButton for choosing a file
     JButton selectBtn;
+
+    //A JLabel for the searchStringTF
     JLabel searchStringLbl;
+
+    //A JTextField for entering a search string
     JTextField searchStringTF;
 
+    //This constructor sets the layout for the panel and establishes the elements inside it
     public FileSearchPnl() {
         setLayout(new GridBagLayout());
         setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(10, 10, 10, 10)));
@@ -44,6 +59,7 @@ public class FileSearchPnl extends JPanel
         gbc3.fill = GridBagConstraints.BOTH;
         gbc3.insets = new Insets(15, 15, 15, 15);
 
+        //GridBagConstraints for the searchStringLbl
         GridBagConstraints gbc4 = new GridBagConstraints();
         gbc4.gridx = 1;
         gbc4.gridy = 1;
@@ -53,6 +69,7 @@ public class FileSearchPnl extends JPanel
         gbc4.anchor = GridBagConstraints.EAST;
         gbc4.insets = new Insets(15, 15, 15, 15);
 
+        //GridBagConstraints for the searchStringTF
         GridBagConstraints gbc5 = new GridBagConstraints();
         gbc5.gridx = 2;
         gbc5.gridy = 1;

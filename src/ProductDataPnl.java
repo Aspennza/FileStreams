@@ -4,22 +4,44 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.EtchedBorder;
 import java.awt.*;
 
+/**
+ * Allows the creation of JPanels with JLabels and JTextFields
+ * for entering Product information.
+ * @author Zoe Aspenns aspennza@mail.uc.edu
+ */
 public class ProductDataPnl extends JPanel
 {
+    //A JLabel for the IDTF
     JLabel IDLbl;
+
+    //A JTextField for entering a product ID
     JTextField IDTF;
+
+    //A JLabel for the name field
     JLabel nameLbl;
+
+    //A JTextField for entering a product name
     JTextField nameTF;
+
+    //A JLabel for the descripTF
     JLabel descripLbl;
+
+    //A JTextField for entering a product description
     JTextField descripTF;
+
+    //A JLabel for the costTF
     JLabel costLbl;
+
+    //A JTextField for entering a product cost
     JTextField costTF;
 
+    //This constructor sets up the layout and initializes the components
     public ProductDataPnl()
     {
         setBorder(new CompoundBorder((new EtchedBorder()), new EmptyBorder(10, 10, 10, 10)));
         setLayout(new GridBagLayout());
 
+        //This gbc1 is modified slightly to apply to all the JLabels
         GridBagConstraints gbc1 = new GridBagConstraints();
         gbc1.gridx = 0;
         gbc1.gridy = 0;
@@ -28,6 +50,7 @@ public class ProductDataPnl extends JPanel
         gbc1.anchor = GridBagConstraints.EAST;
         gbc1.insets = new Insets(10, 10, 10, 10);
 
+        //This gbc2 is modified slightly to apply to all the JTextFields
         GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.gridx = 1;
         gbc2.gridy = 0;
@@ -92,6 +115,9 @@ public class ProductDataPnl extends JPanel
         return costTF;
     }
 
+    /**
+     * This method is used to clear all the text fields
+     */
     public void clearInputs() {
         IDTF.setText("");
         nameTF.setText("");

@@ -6,20 +6,37 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Allows the creation of objects for reading a RandomAccessFile,
+ * adding product objects to an ArrayList, and searching a file,
+ * among other functions.
+ * @author Zoe Aspenns aspennza@mail.uc.edu
+ */
 public class ProductReader
 {
+    //This List<Product> stores the products read from the file
     private List<Product> products;
+
+    //This int tracks the size each record should be
     private final int RECORD_SIZE = 124;
+
+    //This Path stores the location of the current file
     private Path currentFile;
 
     public ProductReader() {
         products = new ArrayList<>();
     }
 
+    /**
+     * This method reads products from a RandomAccessFile and adds them to the products List.
+     * Also checks for errors.
+     * @param file The Path of the file to be read
+     */
     public void loadAllProducts(Path file) {
         products.clear();
         currentFile = file;
 
+        //This algorithm reads the products into the list
         try(RandomAccessFile randFile = new RandomAccessFile(file.toFile(), "r")) {
             long position = 0;
             Product p;
@@ -28,6 +45,7 @@ public class ProductReader
                 position += RECORD_SIZE;
             }
 
+            //This algorithm makes sure the file isn't empty
             if(products.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "This file does not appear to contain any products.");
             } else {
@@ -44,8 +62,16 @@ public class ProductReader
         }
     }
 
+    /**
+     * This method reads individual data fields from a RandomAccessFile and
+     * adds them to a Product object.
+     * @param randFile The file to read
+     * @param position the position of the cursor
+     * @return a Product object containing the data from the file
+     */
     private static Product readProductData(RandomAccessFile randFile, long position)
     {
+        //This algorithm checks for exceptions while reading
         try {
             if (position >= randFile.length()) {
                 return null; //This means there are no more records in the file
@@ -80,6 +106,12 @@ public class ProductReader
         }
     }
 
+    /**
+     * This method accepts a search string and filters the products List
+     * by it, returning a List of the Products that match the string.
+     * @param searchString the String to search the List by
+     * @return a List of filtered products
+     */
     public List<Product> searchFile(String searchString)
     {
         List<Product> filteredProducts = new ArrayList<>();
@@ -99,6 +131,9 @@ public class ProductReader
         return filteredProducts;
     }
 
+    /**
+     * This method resets the program to its original state
+     */
     public void reset() {
         products.clear();
         currentFile = null;
