@@ -4,10 +4,20 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+/**
+ * Allows the creation of objects for writing Product data to a
+ * RandomAccessFile.
+ * @author Zoe Aspenns aspennza@mail.uc.edu
+ */
 public class ProductWriter
 {
+    //This Path stores the location of the file to write to
     private Path file;
+
+    //This int tracks how many records have been written
     private int recordsWritten;
+
+    //This int permanently stores the maximum size of a record
     private final int RECORD_SIZE = 124;
 
     public ProductWriter(Path file)
@@ -16,8 +26,16 @@ public class ProductWriter
         this.recordsWritten = 0;
     }
 
+    /**
+     * This method writes Product data input by a user into a RandomAccessFile.
+     * @param ID the user's Product ID
+     * @param name the user's Product name
+     * @param description the user's Product description
+     * @param cost the user's Product cost
+     */
     public void saveProduct(String ID, String name, String description, double cost)
     {
+        //This algorithm checks for errors while writing to the file
         try(RandomAccessFile randFile = new RandomAccessFile(file.toFile(), "rw"))
         {
             randFile.seek(recordsWritten * RECORD_SIZE);
@@ -38,6 +56,9 @@ public class ProductWriter
         }
     }
 
+    /**
+     * This method resets the program state
+     */
     public void reset() {
         recordsWritten = 0;
     }

@@ -4,16 +4,38 @@ import java.util.List;
 import java.awt.*;
 import java.nio.file.Path;
 
+/**
+ * Allows the creation of objects for orchestrating a search
+ * of a RandomAccessFile for products with specific names.
+ * Starts the program, displays results, and builds the GUI.
+ * @author Zoe Aspenns aspennza@mail.uc.edu
+ */
 public class RandProductSearch
 {
+    //A JFrame for containing the other GUI elements in the program
     private JFrame frame;
+
+    //A TitlePnl2 containing the logic for formatting the titlePnl
     private TitlePnl2 titlePnl;
+
+    //A FileSearchPnl containing the logic for formatting the fileSearchPnl
     private FileSearchPnl fileSearchPnl;
+
+    //A FilteredProductsPnl containing the logic for formatting the filteredProductsPnl
     private FilteredProductsPnl filteredProductsPnl;
+
+    //A ControlPnl2 containing the logic for formatting the controlPnl
     private ControlPnl2 controlPnl;
+
+    //A FileChooserLauncher for creating and managing the JFileChooser
     private FileChooserLauncher chooser;
+
+    //A ProductReader for reading data from a RandomAccessFile
     private ProductReader reader;
 
+    /**
+     * This method launches the program, initializing critical components and establishing the GUI.
+     */
     public void start() {
         reader = new ProductReader();
         chooser = new FileChooserLauncher();
@@ -24,6 +46,9 @@ public class RandProductSearch
         JOptionPane.showMessageDialog(null, "Welcome to the Product Searcher! First, pick a file, then enter a search string to filter the file for relevant product names.");
     }
 
+    /**
+     * This method resets the program to its original state
+     */
     public void resetProgram() {
         reader.reset();
         chooser.resetChooser();
@@ -35,10 +60,15 @@ public class RandProductSearch
         controlPnl.getSearchBtn().setEnabled(false);
     }
 
+    /**
+     * This method prints the content of a List of Products to the filteredProductsTA.
+     * @param results a List of Product objects
+     */
     public void displayResults(List<Product> results) {
         filteredProductsPnl.getFilteredProductsTA().setText("");
         int index = 1;
 
+        //This algorithm iterates through the results List and appends the data to the filteredProductsTA
         for(Product p : results) {
             filteredProductsPnl.getFilteredProductsTA().append("Product " + index + "\nID: " + p.getID()
                     + "\nName: " + p.getName()
@@ -49,6 +79,9 @@ public class RandProductSearch
         }
     }
 
+    /**
+     * This method establishes the JFrame, its panels, and its settings.
+     */
     public void generateFrame()
     {
         frame = new JFrame();
@@ -63,7 +96,7 @@ public class RandProductSearch
         gbc1.weighty = 0.25;
         gbc1.fill = GridBagConstraints.BOTH;
 
-        //GridBagConstraints for the filePnl
+        //GridBagConstraints for the fileSearchPnl
         GridBagConstraints gbc2 = new GridBagConstraints();
         gbc2.gridx = 0;
         gbc2.gridy = 1;
@@ -73,7 +106,7 @@ public class RandProductSearch
         gbc2.weighty = 0.25;
         gbc2.fill = GridBagConstraints.BOTH;
 
-        //GridBagConstraints for the tagPnl
+        //GridBagConstraints for the filteredProductsPnl
         GridBagConstraints gbc3 = new GridBagConstraints();
         gbc3.gridx = 0;
         gbc3.gridy = 2;
@@ -129,11 +162,16 @@ public class RandProductSearch
         frame.setVisible(true);
     }
 
+    /**
+     * This method sets up the ActionListeners for the JButtons in the GUI
+     * to maintain separation of concerns (model, view, controller).
+     */
     private void setUpButtonActions()
     {
         fileSearchPnl.getSelectBtn().addActionListener((ActionEvent ae) -> {
             Path selectedFile = chooser.chooseFile();
 
+            //This algorithm reads the products from the file
             if(selectedFile != null) {
                 reader.setCurrentFile(selectedFile);
                 fileSearchPnl.getFileTF().setText(selectedFile.getFileName().toString());
@@ -147,11 +185,13 @@ public class RandProductSearch
         controlPnl.getSearchBtn().addActionListener((ActionEvent ae) -> {
             String searchString = fileSearchPnl.getSearchStringTF().getText().trim();
 
+            //This algorithm checks if the file content is null before searching
             if(reader.getProducts().isEmpty()) {
                 JOptionPane.showMessageDialog(null, "You must select a file before searching.");
                 return;
             }
 
+            //This algorithm checks if the search string is null before searching
             if (searchString.isEmpty()) {
                 JOptionPane.showMessageDialog(null, "You must enter a search string.");
                 return;
@@ -162,10 +202,10 @@ public class RandProductSearch
         });
 
         controlPnl.getNewFileBtn().addActionListener((ActionEvent ae) -> {
-            //This int tracks whether the user confirmed or denied they wanted to quit the program
+            //This int tracks whether the user confirmed or denied they wanted to pick a new file
             int selection = JOptionPane.showConfirmDialog(null, "Are you sure you want to reset the program?", "Reset", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-            //This algorithm determines whether to quit the program based on the user's input
+            //This algorithm determines whether to pick a new file based on the user's input
             if(selection == JOptionPane.YES_OPTION) {
                 JOptionPane.showMessageDialog(null, "Resetting the program...");
                 resetProgram();

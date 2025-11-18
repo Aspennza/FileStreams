@@ -4,22 +4,44 @@ import java.awt.event.ActionEvent;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-//basically, just review his directions!!!
-//create JUnit
-//javadoc
 //UML
 
+/**
+ * Allows the creation of controller objects for orchestrating
+ * the creation of RandomAccessFiles of Product objects. Sets up ActionListeners,
+ * provides methods for adding products, resetting, etc.
+ * @author Zoe Aspenns aspennza@mail.uc.edu
+ */
 public class RandProductMaker
 {
+    //This JFrame stores the other GUI elements
     private JFrame frame;
+
+    //A TitlePnl object containing the logic for formatting the titlePnl
     private TitlePnl titlePnl;
+
+    //A ProductDataPnl object containing the logic for formatting the productDataPnl
     private ProductDataPnl productDataPnl;
+
+    //A ControlPnl object containing the logic for formatting the controlPnl
     private ControlPnl controlPnl;
+
+    //A CounterPnl object containing the logic for formatting the CounterPnl
     private CounterPnl counterPnl;
+
+    //A ProductWriter for writing the data to the file
     private ProductWriter writer;
+
+    //A ProductValidator for validating user input
     private ProductValidator validator;
+
+    //An int for tracking how many files have been saved
     private int filesSaved;
 
+    /**
+     * This method sets up all the preliminary information for making the program run.
+     * Creates GUI, sets up writer and validator.
+     */
     public void start() {
         filesSaved = 0;
         writer = new ProductWriter(nameFile());
@@ -28,22 +50,31 @@ public class RandProductMaker
         JOptionPane.showMessageDialog(null, "Welcome to the Product Maker. First, type some data into the product information fields, then click Add Product to add them to a binary file. You can make a new file by clicking New File.");
     }
 
+    /**
+     * This method dynamically names the next file based on how many have been saved.
+     * @return a Path of where to save the file
+     */
     public Path nameFile()
     {
         return Paths.get(System.getProperty("user.dir") + "\\src\\RandProductData" + (filesSaved + 1) + ".bin");
     }
 
+    /**
+     * This method takes the data from the productDataPnl,
+     * checks it for validity, and saves it to the file.
+     */
     public void addProduct()
     {
         String ID = productDataPnl.getIDTF().getText().trim();
         String name = productDataPnl.getNameTF().getText().trim();
         String description = productDataPnl.getDescripTF().getText().trim();
 
-
+                //This algorithm checks for errors in double parsing and reading the file
                 try {
                     String costStr = productDataPnl.getCostTF().getText().trim();
                     double cost = Double.parseDouble(costStr);
 
+                    //This algorithm checks the validity of the input and writes it to a file
                     if(validator.checkValidInput(ID, name, description, costStr)) {
                         Product product = new Product(ID, name, description, cost);
 
@@ -62,6 +93,9 @@ public class RandProductMaker
                 }
     }
 
+    /**
+     * This method resets the program state
+     */
     public void resetProgram()
     {
         productDataPnl.clearInputs();
@@ -69,12 +103,15 @@ public class RandProductMaker
         if(writer != null) writer.reset();
     }
 
+    /**
+     * This method checks if the user wants to start saving to a new file.
+     */
     public void createNewFile()
     {
-            //This int tracks whether the user confirmed or denied they wanted to quit the program
+            //This int tracks whether the user confirmed or denied they wanted to make a new file
             int selection = JOptionPane.showConfirmDialog(null, "Are you sure you want to create a new file?", "New File", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-            //This algorithm determines whether to quit the program based on the user's input
+            //This algorithm determines whether to make a new file based on the user's input
             if(selection == JOptionPane.YES_OPTION) {
                 filesSaved++;
                 writer = new ProductWriter(nameFile());
@@ -86,6 +123,10 @@ public class RandProductMaker
             }
     }
 
+    /**
+     * This method sets up the ActionListeners for the panels to
+     * maintain separation of concerns (model, view, controller).
+     */
     private void setUpButtonActions()
     {
         controlPnl.getNewFileBtn().addActionListener((ActionEvent ae) -> {
@@ -111,6 +152,9 @@ public class RandProductMaker
         });
     }
 
+    /**
+     * This method sets up the JFrame, JPanels, and all other relevant settings.
+     */
     public void generateFrame() {
         frame = new JFrame();
 
