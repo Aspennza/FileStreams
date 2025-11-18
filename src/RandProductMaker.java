@@ -4,8 +4,6 @@ import java.awt.event.ActionEvent;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-//UML
-
 /**
  * Allows the creation of controller objects for orchestrating
  * the creation of RandomAccessFiles of Product objects. Sets up ActionListeners,
